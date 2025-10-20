@@ -1,20 +1,20 @@
 ---
-title: Hello World
-description: Welcome to Hugo Theme Stack
+title: Hello, World!
+description: A little about me and this website
 slug: hello-world
-date: 2022-03-06 00:00:00+0000
+date: 2025-10-05 00:00:00+0000
 image: cover.jpg
 categories:
-    - Example Category
+    - Personal
 tags:
-    - Example Tag
+    - 
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
 
-Welcome to Hugo theme Stack. This is your first post. Edit or delete it, then start writing!
+Welcome to my blog!
 
-For more information about this theme, check the documentation: https://stack.jimmycai.com/
+My name is Alex Dean. I'm a network engineer with over 10 years of experience. Much of my experience has had heavy cybersecurity duties as well. I'm currently attending WGU in the B.S. Cloud Computing (AWS track) program and have active SecurityX (formerly CASP+) and CCNA certifications. I've worked in both public and private sector positions. I've also gotten to work with on-prem, hybrid, and fully cloud environments. I'm very thankful for the range of experience I've been able to have so far.
 
-Want a site like this? Check out [hugo-theme-stack-stater](https://github.com/CaiJimmy/hugo-theme-stack-starter)
+My goal with this blog is to share any tasks, struggles, or news that I feel like may be possibly help others or may be useful to come back to in the future.
 
-> Photo by [Pawel Czerwinski](https://unsplash.com/@pawel_czerwinski) on [Unsplash](https://unsplash.com/)
+This website is built with Hugo so this will likely be in a "in-progress" state for some time as a get the hang of using Hugo. I'll do my best to keep this thing as shiny and polished as possible while I learn it!

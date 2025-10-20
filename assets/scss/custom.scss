@@ -1,3 +1,14 @@
 /*
     You can add your own custom styles here.
 */
+
+a {
+  color: rgb(114, 114, 255);
+  text-decoration: none; /* Removes default underline */
+}
+
+/* Styles applied on hover */
+a:hover {
+  color: rgb(108, 206, 63); /* Changes text color to red on hover */
+  text-decoration: underline; /* Adds an underline on hover */
+}
