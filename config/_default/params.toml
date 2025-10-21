@@ -5,8 +5,9 @@ rssFullContent = true
 favicon = "/favicon.png"
 
 [footer]
-since = 2020
+since = 2025
 customText = ""
+
 
 [dateFormat]
 published = "Jan 02, 2006"
@@ -14,7 +15,7 @@ lastUpdated = "Jan 02, 2006 15:04 MST"
 
 [sidebar]
 #emoji = "🍥"
-subtitle = "Welcome to my blog! I'll write about any issues, events, or news that I find interesting in the world of IT networking/security."
+subtitle = "Welcome to my blog! I'll write about any things I learned, issues, events, or news that I find interesting in the world of IT networking/security."
 
 [sidebar.avatar]
 enabled = true
@@ -77,7 +78,7 @@ enabled = true
 ## Comments
 [comments]
 enabled = true
-provider = "disqus"
+provider = "cusdis"
 
 [comments.disqusjs]
 shortname = ""
@@ -146,5 +147,6 @@ clientID = ""
 clientSecret = ""
 
 [comments.cusdis]
-host = ""
-id = ""
+host = "https://cusdis.com"
+id = "e191f013-8e7d-45b1-b264-aae8cebc46f4"
+

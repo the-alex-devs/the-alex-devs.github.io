@@ -1,0 +1,52 @@
+<script>
+    function resizeIframesToContent() {
+  const iframes = document.querySelectorAll('iframe');
+
+  iframes.forEach(iframe => {
+    try {
+      const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+      // Make sure content is loaded before resizing
+      iframe.onload = function () {
+        try {
+          const newHeight = iframe.contentWindow.document.body.scrollHeight;
+          iframe.style.height = newHeight + 'px';
+        } catch (err) {
+          console.warn('Could not access iframe contents (possibly cross-origin):', err);
+        }
+      };
+
+      // If already loaded
+      if (iframeDoc && iframeDoc.readyState === 'complete') {
+        const newHeight = iframeDoc.body.scrollHeight;
+        iframe.style.height = newHeight + 'px';
+      }
+    } catch (e) {
+      console.warn('Iframe resizing failed due to cross-origin restrictions:', e);
+    }
+  });
+}
+
+// Optionally run this after the DOM is fully loaded
+window.addEventListener('load', resizeIframesToContent);
+</script>
+
+
+<script>
+const observer = new MutationObserver((mutations) => {
+mutations.forEach((mutation) => {
+if (mutation.addedNodes.length == 0) return;
+const iframe = mutation.addedNodes[0];
+if (iframe.tagName !== 'IFRAME') return;
+
+const additionalStyles = `
+.dark {
+background: rgb(48, 48, 48);
+}
+`;
+
+iframe.srcdoc = iframe.srcdoc.replace('</style>', additionalStyles + '</style>');
+});
+});
+observer.observe(document.getElementById("cusdis_thread"), { childList: true, subtree: true });
+</script>

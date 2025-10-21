@@ -11,8 +11,13 @@ defaultContentLanguage = "en"
 # This will make .Summary and .WordCount behave correctly for CJK languages.
 hasCJKLanguage = false
 
-# Change it to your Disqus shortname before using
-disqusShortname = "hugo-theme-stack"
+
 
 [pagination]
 pagerSize = 5
+
+[deployment]
+  [[deployment.targets]]
+    name = 'production'
+    url = 's3://alexdeanlink-blog?region=us-east-1'
+    cloudFrontDistributionID = 'E2423P2GDEDYUH'
