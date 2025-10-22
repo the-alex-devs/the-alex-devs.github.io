@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Routing on Alex's IT Blog</title><link>https://alexdean.link/tags/routing/</link><description>Recent content in Routing on Alex's IT Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 20 Oct 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://alexdean.link/tags/routing/index.xml" rel="self" type="application/rss+xml"/><item><title>Azure ExpressRoute Initial Setup</title><link>https://alexdean.link/p/expressroute-initial-setup/</link><pubDate>Mon, 20 Oct 2025 00:00:00 +0000</pubDate><guid>https://alexdean.link/p/expressroute-initial-setup/</guid><description>&lt;img src="https://alexdean.link/p/expressroute-initial-setup/expressrouteIcon.png" alt="Featured image of post Azure ExpressRoute Initial Setup" /&gt;&lt;p&gt;Finding good documentation on the configurations needed for the CE side of an ExpressRoute setup is difficult. I recently went through an initial setup and ran into several obstacles. &lt;b&gt;This post will focus on the CE config.&lt;/b&gt;&lt;/p&gt;
+&lt;p&gt;First, you need an ExpressRoute circuit established. This is done through a Microsoft partner. I&amp;rsquo;m assuming you&amp;rsquo;re already done with this step and are ready to actually begin configuring things.&lt;/p&gt;
+&lt;p&gt;Next, you&amp;rsquo;ll need to decide on two /30 networks to assign for the BGP peerings with Microsoft. Keep in mind, these two /30s must NOT overlap with anything you end up building in Azure. For example, if you choose 10.0.0.0/30 and 10.0.0.4/30, you CANNOT use 10.0.0.0/24 within a vnet later (exception: if the vnet containing the overlapping subnet is not and never will be peered to the vnet with the circuit within it. I&amp;rsquo;d just avoid overlapping altogether).&lt;/p&gt;
+&lt;p&gt;Once that&amp;rsquo;s decided, configure them within Azure. It&amp;rsquo;s very straightforward and there&amp;rsquo;s plenty of documentation out there on this part. &lt;a href="https://learn.microsoft.com/en-us/azure/expressroute/expressroute-howto-routing-portal-resource-manager" target="_blank"&gt;See here for Azure-side private peering configuration.&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;On the customer equipment (CE) side, you&amp;rsquo;re going to be configuring the BGP peer on your edge device. In the example below, it&amp;rsquo;ll be configs for a Cisco ASR router.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;span class="lnt"&gt;17
+&lt;/span&gt;&lt;span class="lnt"&gt;18
+&lt;/span&gt;&lt;span class="lnt"&gt;19
+&lt;/span&gt;&lt;span class="lnt"&gt;20
+&lt;/span&gt;&lt;span class="lnt"&gt;21
+&lt;/span&gt;&lt;span class="lnt"&gt;22
+&lt;/span&gt;&lt;span class="lnt"&gt;23
+&lt;/span&gt;&lt;span class="lnt"&gt;24
+&lt;/span&gt;&lt;span class="lnt"&gt;25
+&lt;/span&gt;&lt;span class="lnt"&gt;26
+&lt;/span&gt;&lt;span class="lnt"&gt;27
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;### Azure ExpressRoute CE Router BGP configuration ###
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;!
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;ip prefix-list AZURE_PREFIX_FILTER seq 10 permit 192.168.1.0/24
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;ip prefix-list AZURE_PREFIX_FILTER seq 20 permit 192.168.2.0/24
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;!
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;router bgp 64512
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;bgp log-neighbor-changes
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;neighbor 10.0.0.2 remote-as 12076
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;neighbor 10.0.0.2 ebgp-multihop 255
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;neighbor 10.0.0.6 remote-as 12076
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;neighbor 10.0.0.6 ebgp-multihop 255
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;!
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;address-family ipv4
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; network 192.168.1.0/24
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; network 192.168.2.0/24
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; neighbor 10.0.0.2 activate
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; neighbor 10.0.0.2 prefix-list AZURE_PREFIX_FILTER out
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; neighbor 10.0.0.6 activate
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; neighbor 10.0.0.6 prefix-list AZURE_PREFIX_FILTER out
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;exit-address-family
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;!
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;interface GigabitEthernet0/0/0.5
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;description ExpressRoute Connection
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;encapsulation dot1Q 5
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;ip address 10.0.0.5 255.255.255.252 secondary
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;ip address 10.0.0.1 255.255.255.252
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;End
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;A few key takeaways from this template:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Make sure you include an outbound prefix list. If you are advertising too many prefixes to Azure, it will not form neighborships properly.&lt;/li&gt;
+&lt;li&gt;Microsoft&amp;rsquo;s ASN will always be 12076 for private peering.&lt;/li&gt;
+&lt;li&gt;Your IP in the two /30 subnets will always be the first usable IP in the subnet. The second usable IPs need to be configured on the Azure side.&lt;/li&gt;
+&lt;li&gt;the &amp;ldquo;ebgp-multihop&amp;rdquo; statement must be configured as your Azure neighbor will not be directly connected.&lt;/li&gt;
+&lt;li&gt;If you&amp;rsquo;re having trouble with the peering, you can verify your route and ARP tables on both your edge device and on the Azure side. Work on getting pings working from your subinterface IPs to your Azure peer IPs and work your way back.&lt;/li&gt;
+&lt;li&gt;It&amp;rsquo;s not shown in the template above, but be sure to add ACLs to your subinterface.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Importantly: READ THE BGP DEBUG LOGS. If you see SAFI/AFI errors, you&amp;rsquo;ll need to make sure your address-family configs are correct and compatible with the peer. Keep most BGP settings default as there is not much documentation regarding specific Azure peer BGP settings. If you see logs saying the peer has reached its prefix limit, verify your outbound prefix lists are correct and filtering only what you want to advertise.&lt;/p&gt;
+&lt;p&gt;Useful BGP troubleshooting commands:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Show ip bgp summary &amp;ndash; shows BGP neighbors and if they&amp;rsquo;re exchanging routes&lt;/li&gt;
+&lt;li&gt;Show ip bgp neighbor 10.0.0.2 &amp;ndash; shows detailed info about a BGP neighbor&lt;/li&gt;
+&lt;li&gt;Debug ip bgp &amp;ndash; can specify a neighbor to debug so you don&amp;rsquo;t get irrelevant logs&lt;/li&gt;
+&lt;li&gt;Term mon &amp;ndash; to view BGP debug logs&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Don&amp;rsquo;t forget: your cloud IP space will need added to ENS software, firewall rules, router ACLs, and any other points in your infrastructure that may be filtering traffic!&lt;/p&gt;
+&lt;p&gt;Useful Links:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href="https://learn.microsoft.com/en-us/azure/expressroute/" target="_blank"&gt;ExpressRoute Documentation&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href="https://learn.microsoft.com/en-us/azure/expressroute/expressroute-config-samples-routing" target="_blank"&gt;ExpressRoute Router Configuration Sample&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description></item></channel></rss>
